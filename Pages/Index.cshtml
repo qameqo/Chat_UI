@@ -123,7 +123,6 @@
     function sendMessage() {
         const ID = localStorage.getItem('ID')
         if (emojiInput.value != "") {
-            setDate();
             createElementChat(emojiInput.value, getTime(), "right", "Y");
             socket.send(emojiInput.value + ":id:" + ID);
             emojiInput.value = "";
@@ -193,7 +192,7 @@
     }
 
     function loadMessages() {
-        //setDate();
+        setDate();
         const ID = localStorage.getItem('ID')
         $.ajax({
             url: '@Url.Action("GetChat","Chat")', 

@@ -6,15 +6,26 @@ var builder = WebApplication.CreateBuilder(args);
 var redisConfig = builder.Configuration.GetSection("Redis");
 var EndPoint = $"{redisConfig["host"]}:{redisConfig["port"]}";
 var url = redisConfig["url"];
-var options = new ConfigurationOptions
+var options = new ConfigurationOptions();
+if (!string.IsNullOrEmpty(url))
 {
-    EndPoints = { EndPoint },
-    Password = redisConfig["password"],
-    Ssl = true,
-    User = redisConfig["username"]
-};
+    var uri = new Uri(url);
 
-options = ConfigurationOptions.Parse($"redis://{redisConfig["username"]}:{redisConfig["port"] ?? "6379"}");
+    options.EndPoints.Add(uri.Host, uri.Port);
+    if (!string.IsNullOrEmpty(uri.UserInfo))
+    {
+        options.User = uri.UserInfo.Split(':')[0]; // Extract username
+        options.Password = uri.UserInfo.Split(':')[1]; // Extract password
+    }
+    options.Ssl = uri.Scheme == "rediss"; // Use SSL if scheme is rediss
+}
+//options = new ConfigurationOptions
+//{
+//    EndPoints = { EndPoint },
+//    Password = redisConfig["password"],
+//    Ssl = true,
+//    User = redisConfig["username"]
+//};
 
 try
 {

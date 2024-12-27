@@ -81,6 +81,7 @@
             } else {
                 createElementChat(message.split(':id:')[0], time, "right", "N");
             }
+            scrollChat();
         }
     };
 
@@ -161,27 +162,64 @@
         }
         panelChat.appendChild(divItem);
         if (savemode == "Y") {
-            saveMessage(message, date, stylefloat)
+            saveMessage(message, date)
         }
     }
 
-    function saveMessage(message,date,style) {
-        const messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-        messages.push({ message, date, style });
-        localStorage.setItem('chatMessages', JSON.stringify(messages));
+    function saveMessage(message,date) {
+        // const messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        // messages.push({ message, date, style });
+        // localStorage.setItem('chatMessages', JSON.stringify(messages));
+        var payload = {
+            id : localStorage.getItem('ID'),
+            message : message,
+            time : date
+        };
+        $.ajax({
+            url: '@Url.Action("SetChat", "Chat")',
+            type: "POST",
+            data: JSON.stringify(payload),
+            contentType: "application/json charset=utf-8",
+            dataType: "json",
+            async: true,
+            success: function (response, status, xhr) {
+                console.log("Success:", response);
+            },
+            error: function (xhr, status, error) {
+                console.log("Response Text:", xhr.responseText);
+            },
+        });
     }
 
     function loadMessages() {
         setDate();
-        console.log(localStorage.getItem('chatMessages'))
-        var arrmsg = JSON.parse(localStorage.getItem('chatMessages')) || [];
-        console.log(arrmsg)
-        if (arrmsg.length > 0) {
-            for (var i = 0; i < arrmsg.length; i++) {
-                createElementChat(arrmsg[i].message, arrmsg[i].date, arrmsg[i].style, "N");
-            }
-        }
-        scrollChat();
+        const ID = localStorage.getItem('ID')
+        $.ajax({
+            url: '@Url.Action("GetChat","Chat")', 
+            type: "GET",                        
+            data: null,
+            contentType: "application/json charset=utf-8",     
+            dataType: "json",                    
+            async: true,                         
+            success: function (response, status, xhr) { 
+                console.log("Success:", response);
+                if (response.success) {
+                    var data = response.data;
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            createElementChat(data[i].message, data[i].time, data[i].id == ID ? "right" : "left", "N");
+                        }
+                    }
+                    scrollChat();
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr, status, error) { 
+                console.log("Response Text:", xhr.responseText);
+                alert(xhr.responseText);
+            },
+        });
     }
     function setId() {
         const ID = localStorage.getItem('ID')

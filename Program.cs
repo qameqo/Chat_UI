@@ -1,4 +1,31 @@
+using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
+using Websocket_UI.Services;
+
 var builder = WebApplication.CreateBuilder(args);
+var redisConfig = builder.Configuration.GetSection("Redis");
+var EndPoint = redisConfig["host"] + ":" + redisConfig["port"];
+var options = new ConfigurationOptions
+{
+    EndPoints = { EndPoint },
+    Password = redisConfig["password"],
+    Ssl = true,
+    User = redisConfig["username"]
+};
+if (builder.Environment.IsProduction())
+{
+    options = new ConfigurationOptions
+    {
+        EndPoints = { EndPoint },
+    };
+}
+
+builder.Services.AddSingleton<RedisService>(sp =>
+    new RedisService(options));
+
+// Add other services (e.g., controllers, if using a web API)
+builder.Services.AddControllers();
+
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -21,5 +48,5 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
-
+app.MapControllers();
 app.Run();

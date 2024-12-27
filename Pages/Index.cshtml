@@ -44,7 +44,7 @@
     createSnowflakes();
     setId();
     loadMessages();
-    let socket = new WebSocket("https://qameqo-socket.onrender.com/ws");// ws://localhost:5266/ws
+    let socket = new WebSocket('@Model.URL');
     const emojiBtn = document.getElementById("emoji-btn");
     const emojiPicker = document.getElementById("emoji-picker");
     const emojiInput = document.getElementById("Msgtxt");

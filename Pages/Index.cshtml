@@ -75,7 +75,7 @@
         const message = event.data;
         const time = getTime();
         if (message != "") {
-            console.log(message)
+            console.log(message);
             if (message.split(':id:')[1] != ID) {
                 createElementChat(message.split(':id:')[0], time, "left", "Y");
             } else {
@@ -123,6 +123,7 @@
     function sendMessage() {
         const ID = localStorage.getItem('ID')
         if (emojiInput.value != "") {
+            setDate();
             createElementChat(emojiInput.value, getTime(), "right", "Y");
             socket.send(emojiInput.value + ":id:" + ID);
             emojiInput.value = "";
@@ -192,7 +193,7 @@
     }
 
     function loadMessages() {
-        setDate();
+        //setDate();
         const ID = localStorage.getItem('ID')
         $.ajax({
             url: '@Url.Action("GetChat","Chat")', 
@@ -261,10 +262,15 @@
         }
     }
     function setDate() {
+        debugger;
         const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
         const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
         const elements = document.getElementsByClassName('badge');
-        var datebadge = '@DateTime.Now.ToString("dd MMM yy")';
+        const datebadge = new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: '2-digit',
+        }).format(new Date());
         console.log(datebadge)
         var checkdt = false;
         for (let i = 0; i < elements.length; i++) {

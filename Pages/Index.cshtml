@@ -265,6 +265,7 @@
         const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
         const elements = document.getElementsByClassName('badge');
         var datebadge = '@DateTime.Now.ToString("dd MMM yy")';
+        console.log(datebadge)
         var checkdt = false;
         for (let i = 0; i < elements.length; i++) {
             const element = elements[i];
@@ -273,6 +274,7 @@
                 break;
             }
         }
+        console.log(checkdt)
         if (checkdt == false) {
             const divItem2 = document.createElement('div');
             const spanItem2 = document.createElement('span');

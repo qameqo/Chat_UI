@@ -14,16 +14,21 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
-  background-color : antiquewhite;
+    /*margin-bottom: 60px;*/
+    background-color: antiquewhite;
+    font-family: "Concert One", serif;
+    font-weight: 400;
+    font-style: normal;
 }
 .circle-image {
-    width: 100%; 
+    width: 100%;
     height: auto;
-    max-width: 200px;
+    max-width: 150px;
     aspect-ratio: 1;
     border-radius: 50%;
-    object-fit: cover; 
+    object-fit: cover;
+    border: 3px solid black;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
 }
 
 @media (max-width: 576px) {
@@ -43,19 +48,23 @@ body {
 }
 
 @media (max-width: 768px) {
-    #emoji-picker {
-        top: -200px; /* Adjust position for smaller screens */
-        left: 50px; /* Adjust horizontal position */
-        width: 90%; /* Adjust width for mobile */
+    /*#emoji-picker {
+        top: -200px;*/ /* Adjust position for smaller screens */
+        /*left: 50px;*/ /* Adjust horizontal position */
+        /*width: 90%;*/ /* Adjust width for mobile */
+    /*}*/
+    #emoji-btn {
+        display: none;
     }
 }
 
 .emoji:hover {
     background-color: #f0f0f0;
 }
-input:focus , button:focus {
+input:focus, button:focus {
     outline: none !important;
     box-shadow: none !important;
+    border: 2px solid #0d6efd;
 }
 .small-text {
     font-size: 12px;
@@ -65,8 +74,7 @@ input:focus , button:focus {
 }*/
 .bg-chat {
     background-color: antiquewhite;
-    border: solid, 2px ,burlywood;
-
+    border: solid, 2px,#f9d777;
 }
 @keyframes lights {
     0% {
@@ -98,4 +106,10 @@ input:focus , button:focus {
     to {
         transform: translateY(100vh);
     }
+}
+.emoji-picker {
+    position: absolute;
+    display: none;
+    top: -520px;
+    z-index: 999;
 }

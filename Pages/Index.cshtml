@@ -4,19 +4,18 @@
     ViewData["Title"] = "QAMEQO";
 }
 
-<div class="container ">
+<div class="container mb-5">
     <div class="row mt-xl-2 justify-content-center">
-        <div class="col-sm-3">
-            <img src="/img/profile.jpg" class="circle-image" alt="Qameqo">
+        <div class="col-sm-3 d-flex justify-content-center">
+            <img src="/img/profile.jpg" class="circle-image " alt="Qameqo">
         </div>
-        <div class="col-sm-3 align-self-center">
-            <h2>Hi! I'm (Game) <img width="48" height="48" src="https://img.icons8.com/emoji/96/video-game-emoji.png" alt="video-game-emoji" /><br>Atipat Rongumang</h2>
+        <div class="col-sm-3 d-flex justify-content-center align-self-center">
+            <p class="fs-2">Hi! I'm (Game) <img width="48" height="48" src="https://img.icons8.com/emoji/96/video-game-emoji.png" alt="video-game-emoji" /><br>Atipat Rongumang</p>
         </div>
     </div>
     <div class="row mt-xl-2 justify-content-center">
-        <div class="col-sm-5 align-self-center text-center">
-            <h4>อยากถามอะไรพิมพ์ไว้เลยเดี๋ยวมาตอบ <br> ปั่นได้แต่อย่าให้รู้ตัวนะ 😎😎</h4>
-            @* <h6>Chat นี้เฉพาะของวันที่ @DateTime.Now.ToString("dd-MM-yyyy")</h6> *@
+        <div class="col-sm-6 align-self-center text-center">
+            <p class="fs-4">อยากถามอะไรพิมพ์ไว้เลยเดี๋ยวมาตอบ ปั่นได้แต่อย่าให้รู้ตัวนะ 😎😎</p>
         </div>
     </div>
     <div class="row mt-xl-4 justify-content-center">
@@ -26,14 +25,15 @@
     <div class="row justify-content-center">
         <div class="col-sm-5 p-0 mt-xl-5">
             <div class="input-group">
-                <input type="text" onkeyup="ChecklengthMsg(this)" onkeydown="sendMessage(event)" id="Msgtxt" maxlength="100" class="form-control " placeholder="Enter Message..." >
+                <input type="text" onkeyup="ChecklengthMsg(this)" onkeydown="EnterMessage(event)" id="Msgtxt" maxlength="100" class="form-control " placeholder="Enter Message...">
                 <button class="btn btn-outline-primary border-0" onclick="openEmoji(event)" type="button" id="emoji-btn">😀</button>
+                <button type="button" class="btn btn-outline-primary rounded-3" id="btnsend" onclick="sendMessage()">Send 🚀</button>
             </div>
             <div class="d-flex justify-content-end">
                 <span id="counter">0/100</span>
             </div>
             <div style="position: relative; display: inline-block;" class="align-self-end">
-                <div id="emoji-picker" style=" display: none; top: -455px; left: 550px;">
+                <div id="emoji-picker" class="emoji-picker" style="display: none;">
                 </div>
             </div>
         </div>
@@ -101,7 +101,9 @@
         const isClickInside = emojiPicker.contains(event.target) || emojiBtn.contains(event.target);
         if (!isClickInside) {
             emojiPicker.style.display = "none";
-            emojiInput.focus();
+            if (emojiInput.value != "") {
+                emojiInput.focus();
+            }
         }
     });
     function openEmoji(event) {
@@ -112,9 +114,14 @@
         const inputText = inputElement.value;
         $('#counter').text(inputText.length.toString() + "/100");
     }
-    function sendMessage(event) {
+    function EnterMessage(event) {
         if (event.key === 'Enter') {
-            const ID = localStorage.getItem('ID')
+            document.getElementById("btnsend").click();
+        }
+    }
+    function sendMessage() {
+        const ID = localStorage.getItem('ID')
+        if (emojiInput.value != "") {
             createElementChat(emojiInput.value, '@DateTime.Now.ToString("HH:mm")', "right", "Y");
             socket.send(emojiInput.value + ":id:" + ID);
             emojiInput.value = "";

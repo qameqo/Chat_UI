@@ -4,7 +4,7 @@ using Websocket_UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var redisConfig = builder.Configuration.GetSection("Redis");
-var EndPoint = redisConfig["host"] + ":" + redisConfig["port"];
+var EndPoint = $"{redisConfig["host"]}:{redisConfig["port"]}";
 var options = new ConfigurationOptions
 {
     EndPoints = { EndPoint },

@@ -12,13 +12,13 @@ var options = new ConfigurationOptions
     Ssl = true,
     User = redisConfig["username"]
 };
-if (builder.Environment.IsProduction())
-{
-    options = new ConfigurationOptions
-    {
-        EndPoints = { EndPoint },
-    };
-}
+//if (builder.Environment.IsProduction())
+//{
+//    options = new ConfigurationOptions
+//    {
+//        EndPoints = { EndPoint },
+//    };
+//}
 
 builder.Services.AddSingleton<RedisService>(sp =>
     new RedisService(options));

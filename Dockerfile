@@ -11,8 +11,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0-nanoserver-1809 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-RUN adduser --disabled-password --gecos "" ContainerUser
-USER ContainerUser
+USER root
 COPY ["Websocket_UI.csproj", "."]
 RUN dotnet restore "./././Websocket_UI.csproj"
 COPY . .

@@ -73,7 +73,7 @@
     socket.onmessage = function (event) {
         const ID = localStorage.getItem('ID')
         const message = event.data;
-        const time = '@DateTime.Now.ToString("HH:mm")';
+        const time = getTime();
         if (message != "") {
             console.log(message)
             if (message.split(':id:')[1] != ID) {
@@ -122,9 +122,10 @@
     function sendMessage() {
         const ID = localStorage.getItem('ID')
         if (emojiInput.value != "") {
-            createElementChat(emojiInput.value, '@DateTime.Now.ToString("HH:mm")', "right", "Y");
+            createElementChat(emojiInput.value, getTime(), "right", "Y");
             socket.send(emojiInput.value + ":id:" + ID);
             emojiInput.value = "";
+            $('#counter').text("0/100");
             scrollChat();
         }
     }
@@ -244,6 +245,19 @@
             divItem2.classList.add("justify-content-center");
             panelChat.appendChild(divItem2);
         }
+    }
+    function getTime() {
+        var date = new Date();
+        var time = "";
+        var h = date.getHours().toString();
+        var m = date.getMinutes().toString();
+        if (h.length == 1) {
+            h = "0" + h;
+        }
+        if (m.length == 1) {
+            m = "0" + m;
+        }
+        return h + ":" + m ;
     }
 </script>
 

@@ -13,8 +13,17 @@ var options = new ConfigurationOptions
     User = redisConfig["username"]
 };
 
-builder.Services.AddSingleton<RedisService>(sp =>
-    new RedisService(options));
+try
+{
+    builder.Services.AddSingleton<RedisService>(sp =>
+        new RedisService(options));
+}
+catch (Exception ex)
+{
+    Console.Error.WriteLine($"Redis connection error: {ex.Message}");
+    throw;
+}
+
 
 // Add other services (e.g., controllers, if using a web API)
 builder.Services.AddControllers();

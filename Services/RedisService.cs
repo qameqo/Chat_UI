@@ -9,8 +9,16 @@ namespace Websocket_UI.Services
 
         public RedisService(ConfigurationOptions connectionString)
         {
-            _redisConnection = ConnectionMultiplexer.Connect(connectionString);
-            _database = _redisConnection.GetDatabase();
+            try
+            {
+                _redisConnection = ConnectionMultiplexer.Connect(connectionString);
+                _database = _redisConnection.GetDatabase();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            
         }
 
         public void Set(string key, string value)

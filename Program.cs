@@ -5,6 +5,7 @@ using Websocket_UI.Services;
 var builder = WebApplication.CreateBuilder(args);
 var redisConfig = builder.Configuration.GetSection("Redis");
 var EndPoint = $"{redisConfig["host"]}:{redisConfig["port"]}";
+var url = redisConfig["url"];
 var options = new ConfigurationOptions
 {
     EndPoints = { EndPoint },
@@ -16,7 +17,7 @@ var options = new ConfigurationOptions
 try
 {
     builder.Services.AddSingleton<RedisService>(sp =>
-        new RedisService(options));
+        new RedisService(url));
 }
 catch (Exception ex)
 {

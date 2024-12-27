@@ -7,18 +7,10 @@ namespace Websocket_UI.Services
         private readonly ConnectionMultiplexer _redisConnection;
         private readonly IDatabase _database;
 
-        public RedisService(ConfigurationOptions connectionString)
+        public RedisService(ConfigurationOptions conStr)
         {
-            try
-            {
-                _redisConnection = ConnectionMultiplexer.Connect(connectionString);
-                _database = _redisConnection.GetDatabase();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            
+            _redisConnection = ConnectionMultiplexer.Connect(conStr);
+            _database = _redisConnection.GetDatabase();
         }
 
         public void Set(string key, string value)

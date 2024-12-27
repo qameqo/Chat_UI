@@ -7,9 +7,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-nanoserver-1809 AS base
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
-USER root
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0-nanoserver-1809 AS build
+USER root
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Websocket_UI.csproj", "."]

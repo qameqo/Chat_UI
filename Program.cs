@@ -14,10 +14,12 @@ var options = new ConfigurationOptions
     User = redisConfig["username"]
 };
 
+options = ConfigurationOptions.Parse($"redis://{redisConfig["username"]}:{redisConfig["port"] ?? "6379"}");
+
 try
 {
     builder.Services.AddSingleton<RedisService>(sp =>
-        new RedisService(url));
+        new RedisService(options));
 }
 catch (Exception ex)
 {

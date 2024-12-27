@@ -57,9 +57,9 @@
         skinTonePosition : "none",
         onEmojiSelect: (emoji) => {
             emojiInput.value += emoji.native;
+            ChecklengthMsg(emojiInput , "Y");
         },
         onClickOutside: (emoji) => { 
-            console.log(emoji)
             if (emojiPicker.style.display === "block") {
                 emojiPicker.style.display = "none";
             }
@@ -105,6 +105,7 @@
             emojiPicker.style.display = "none";
             if (emojiInput.value != "") {
                 emojiInput.focus();
+                emojiInput.setSelectionRange(emojiInput.value.length, emojiInput.value.length);
             }
         }
     });
@@ -112,9 +113,15 @@
         emojiPicker.style.display = emojiPicker.style.display === "none" ? "block" : "none";
         event.stopPropagation();
     }
-    function ChecklengthMsg(inputElement) {
+    function ChecklengthMsg(inputElement , emoji = "") {
         const inputText = inputElement.value;
-        $('#counter').text(inputText.length.toString() + "/100");
+        let lengthMsg = "";
+        if(emoji != ""){
+            lengthMsg = (inputText.length / 2).toString();
+        }else{
+            lengthMsg = inputText.length.toString();
+        }
+        $('#counter').text(lengthMsg + "/100");
     }
     function EnterMessage(event) {
         if (event.key === 'Enter') {

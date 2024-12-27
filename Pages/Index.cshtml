@@ -1,0 +1,244 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "QAMEQO";
+}
+
+<div class="container ">
+    <div class="row mt-xl-2 justify-content-center">
+        <div class="col-sm-3">
+            <img src="/img/profile.jpg" class="circle-image" alt="Qameqo">
+        </div>
+        <div class="col-sm-3 align-self-center">
+            <h2>Hi! I'm (Game) <img width="48" height="48" src="https://img.icons8.com/emoji/96/video-game-emoji.png" alt="video-game-emoji" /><br>Atipat Rongumang</h2>
+        </div>
+    </div>
+    <div class="row mt-xl-2 justify-content-center">
+        <div class="col-sm-5 align-self-center text-center">
+            <h4>อยากถามอะไรพิมพ์ไว้เลยเดี๋ยวมาตอบ <br> ปั่นได้แต่อย่าให้รู้ตัวนะ 😎😎</h4>
+            @* <h6>Chat นี้เฉพาะของวันที่ @DateTime.Now.ToString("dd-MM-yyyy")</h6> *@
+        </div>
+    </div>
+    <div class="row mt-xl-4 justify-content-center">
+        <div class=" col-sm-5 rounded-2 shadow-lg panelChat bg-chat" id="panelChat" style="height:350px;">
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-sm-5 p-0 mt-xl-5">
+            <div class="input-group">
+                <input type="text" onkeyup="ChecklengthMsg(this)" onkeydown="sendMessage(event)" id="Msgtxt" maxlength="100" class="form-control " placeholder="Enter Message..." >
+                <button class="btn btn-outline-primary border-0" onclick="openEmoji(event)" type="button" id="emoji-btn">😀</button>
+            </div>
+            <div class="d-flex justify-content-end">
+                <span id="counter">0/100</span>
+            </div>
+            <div style="position: relative; display: inline-block;" class="align-self-end">
+                <div id="emoji-picker" style=" display: none; top: -455px; left: 550px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+<script>
+    createSnowflakes();
+    setId();
+    loadMessages();
+    let socket = new WebSocket("https://qameqo-socket.onrender.com/ws");// ws://localhost:5266/ws
+    const emojiBtn = document.getElementById("emoji-btn");
+    const emojiPicker = document.getElementById("emoji-picker");
+    const emojiInput = document.getElementById("Msgtxt");
+    const messages = [];
+    const picker = new EmojiMart.Picker({
+        title: "Pick an emoji",
+        set: "facebook",
+        previewPosition : "none",
+        searchPosition : "none",
+        skinTonePosition : "none",
+        onEmojiSelect: (emoji) => {
+            emojiInput.value += emoji.native;
+        },
+        onClickOutside: (emoji) => { 
+            console.log(emoji)
+            if (emojiPicker.style.display === "block") {
+                emojiPicker.style.display = "none";
+            }
+        },
+    });
+
+    socket.onopen = function (e) {
+        console.log("[open] Connection established");
+    };
+
+    socket.onmessage = function (event) {
+        const ID = localStorage.getItem('ID')
+        const message = event.data;
+        const time = '@DateTime.Now.ToString("HH:mm")';
+        if (message != "") {
+            console.log(message)
+            if (message.split(':id:')[1] != ID) {
+                createElementChat(message.split(':id:')[0], time, "left", "Y");
+            } else {
+                createElementChat(message.split(':id:')[0], time, "right", "N");
+            }
+        }
+    };
+
+    socket.onclose = function (event) {
+        if (event.wasClean) {
+            console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+        } else {
+            console.error('[close] Connection died');
+        }
+    };
+
+    socket.onerror = function (error) {
+        console.error(`[error] ${error.message}`);
+    };
+
+    document.getElementById("emoji-picker").appendChild(picker);
+    document.addEventListener("click", (event) => {
+        const isClickInside = emojiPicker.contains(event.target) || emojiBtn.contains(event.target);
+        if (!isClickInside) {
+            emojiPicker.style.display = "none";
+            emojiInput.focus();
+        }
+    });
+    function openEmoji(event) {
+        emojiPicker.style.display = emojiPicker.style.display === "none" ? "block" : "none";
+        event.stopPropagation();
+    }
+    function ChecklengthMsg(inputElement) {
+        const inputText = inputElement.value;
+        $('#counter').text(inputText.length.toString() + "/100");
+    }
+    function sendMessage(event) {
+        if (event.key === 'Enter') {
+            const ID = localStorage.getItem('ID')
+            createElementChat(emojiInput.value, '@DateTime.Now.ToString("HH:mm")', "right", "Y");
+            socket.send(emojiInput.value + ":id:" + ID);
+            emojiInput.value = "";
+            scrollChat();
+        }
+    }
+    function createElementChat(message, date , stylefloat , savemode) {
+        var msg = "";
+        const chunkSize = 20; 
+        const divItem = document.createElement('div');
+        const spanItem = document.createElement('span');
+        const spanTime = document.createElement('span');
+        let panelChat = document.getElementById('panelChat');
+        const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
+        const arrclassspan = ["p-2", "text-white" , "bg-primary", "bg-gradient", "rounded-2", "small-text"];
+        const arrclassspantime = ["small-text", "mt-auto", "text-dark"];
+        
+        divItem.classList.add(...arrclassdiv);
+        spanItem.classList.add(...arrclassspan);
+        spanTime.classList.add(...arrclassspantime);
+        for (var i = 0; i <= message.length; i += chunkSize) {
+            msg += message.substring(i, i + chunkSize) + '<br>';
+        }
+        spanItem.innerHTML = msg;
+        spanTime.innerHTML = date;
+        if (stylefloat == "right") {
+            divItem.classList.add("justify-content-end");
+            spanTime.classList.add("me-2")
+            divItem.appendChild(spanTime)
+            divItem.appendChild(spanItem)
+        } else {
+            divItem.classList.add("justify-content-start");
+            spanTime.classList.add("ms-2")
+            divItem.appendChild(spanItem)
+            divItem.appendChild(spanTime)
+        }
+        panelChat.appendChild(divItem);
+        if (savemode == "Y") {
+            saveMessage(message, date, stylefloat)
+        }
+    }
+
+    function saveMessage(message,date,style) {
+        const messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        messages.push({ message, date, style });
+        localStorage.setItem('chatMessages', JSON.stringify(messages));
+    }
+
+    function loadMessages() {
+        setDate();
+        console.log(localStorage.getItem('chatMessages'))
+        var arrmsg = JSON.parse(localStorage.getItem('chatMessages')) || [];
+        console.log(arrmsg)
+        if (arrmsg.length > 0) {
+            for (var i = 0; i < arrmsg.length; i++) {
+                createElementChat(arrmsg[i].message, arrmsg[i].date, arrmsg[i].style, "N");
+            }
+        }
+        scrollChat();
+    }
+    function setId() {
+        const ID = localStorage.getItem('ID')
+        if (ID === null) {
+            localStorage.setItem('ID', GenGuID())
+        }
+    }
+    function GenGuID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+            .replace(/[xy]/g, function (c) {
+                const r = Math.random() * 16 | 0,
+                    v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+    }
+    function scrollChat() {
+        let panelChat = document.getElementById('panelChat');
+        panelChat.scrollTo({
+            top: panelChat.scrollHeight, 
+            behavior: 'smooth' 
+        });
+    }
+    function createSnowflakes() {
+        const numFlakes = 25;
+        const colors = ['#ffffff', '#d4f1f9', '#e8f8ff'];
+
+        for (let i = 0; i < numFlakes; i++) {
+            const flake = document.createElement('div');
+            flake.classList.add('snowflake');
+            flake.innerHTML = '❄';
+            document.body.appendChild(flake);
+
+            const size = Math.random() * 10 + 10 + 'px';
+            flake.style.left = Math.random() * 100 + 'vw';
+            flake.style.fontSize = size;
+            flake.style.color = colors[Math.floor(Math.random() * colors.length)];
+            flake.style.animationDuration = Math.random() * 3 + 2 + 's';
+            flake.style.animationDelay = Math.random() * 5 + 's';
+        }
+    }
+    function setDate() {
+        const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
+        const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
+        const elements = document.getElementsByClassName('badge');
+        var datebadge = '@DateTime.Now.ToString("dd MMM yy")';
+        var checkdt = false;
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            if (elements.text == datebadge) {
+                checkdt = true;
+                break;
+            }
+        }
+        if (checkdt == false) {
+            const divItem2 = document.createElement('div');
+            const spanItem2 = document.createElement('span');
+            divItem2.classList.add(...arrclassdiv)
+            spanItem2.classList.add(...arrclassspanbadge)
+            spanItem2.innerHTML = datebadge;
+            divItem2.appendChild(spanItem2);
+            divItem2.classList.add("justify-content-center");
+            panelChat.appendChild(divItem2);
+        }
+    }
+</script>
+
+
+

@@ -77,29 +77,21 @@
         const time = getTime();
         if (message != "") {
             console.log(message);
-            setDate("New");
             var style = "";
             if (message.includes("time")) {
                 console.log(message)
-                setDate("old", message.split(':time:')[1]).then(() => {
-                    scrollChat();
-                });
+                setDate("old", message.split(':time:')[1]);
             }else{
-                setDate("New").then(() => {
-                    let style = "";
-                    if (message.split(':id:')[1] !== ID) {
-                        style = "left";
-                        console.log("onmessage 1");
-                    } else {
-                        style = "right";
-                        console.log("onmessage 2");
-                    }
-                    createElementChat(message.split(':id:')[0], time, style, "N");
-                    scrollChat();
-                }).catch((error) => {
-                    console.error("Error in setDate:", error);
-                });
+                if (message.split(':id:')[1] != ID) {
+                    style = "left";
+                    console.log("onmessage 1");
+                } else {
+                    style = "right";
+                    console.log("onmessage 2");
+                }
+                GetSocketMessage("New",message.split(':id:')[0], time, style, "N");
             }
+            scrollChat();
         }
     };
 
@@ -300,76 +292,67 @@
         }
     }
     function setDate(mode, time = "") {
-        debugger;
-        return new Promise((resolve, reject) => {
-            try{
-                const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
-                const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
-                const elements = document.querySelectorAll('.panelChat .badge');
-                const datebadge = new Intl.DateTimeFormat('en-GB', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: '2-digit',
-                }).format(new Date());
-                let checkdt = false;
+        const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
+        const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
+        const elements = document.querySelectorAll('.panelChat .badge');
+        const datebadge = new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: '2-digit',
+        }).format(new Date());
+        let checkdt = false;
 
-                if (mode === "New") {
-                    for (let i = elements.length - 1; i >= 0; i--) {
-                        if (elements[i].textContent === datebadge.toString()) {
-                            checkdt = true;
-                            break;
-                        }
-                    }
-
-                    if (!checkdt) {
-                        const divItem2 = document.createElement('div');
-                        const spanItem2 = document.createElement('span');
-                        divItem2.classList.add(...arrclassdiv);
-                        spanItem2.classList.add(...arrclassspanbadge);
-                        spanItem2.innerHTML = datebadge;
-                        divItem2.appendChild(spanItem2);
-                        divItem2.classList.add("justify-content-center");
-                        panelChat.appendChild(divItem2);
-
-                        const payload = {
-                            id: "",
-                            message: "",
-                            time: datebadge,
-                        };
-                        $.ajax({
-                            url: '@Url.Action("SetChat", "Chat")',
-                            type: "POST",
-                            data: JSON.stringify(payload),
-                            contentType: "application/json; charset=utf-8",
-                            dataType: "json",
-                            async: true,
-                            success: function (response, status, xhr) {
-                                console.log("Success:", response);
-                                resolve();
-                            },
-                            error: function (xhr, status, error) {
-                                console.error("Response Text:", xhr.responseText);
-                            },
-                        });
-
-                        socket.send(":time:" + datebadge);
-                    }
-                    resolve();
-                } else {
-                    const divItem2 = document.createElement('div');
-                    const spanItem2 = document.createElement('span');
-                    divItem2.classList.add(...arrclassdiv);
-                    spanItem2.classList.add(...arrclassspanbadge);
-                    spanItem2.innerHTML = time;
-                    divItem2.appendChild(spanItem2);
-                    divItem2.classList.add("justify-content-center");
-                    panelChat.appendChild(divItem2);
-                    resolve();
+        if (mode === "New") {
+            for (let i = elements.length - 1; i >= 0; i--) {
+                if (elements[i].textContent === datebadge.toString()) {
+                    checkdt = true;
+                    break;
                 }
-            }catch(error){
-                reject(error); 
             }
-        });
+
+            if (!checkdt) {
+                const divItem2 = document.createElement('div');
+                const spanItem2 = document.createElement('span');
+                divItem2.classList.add(...arrclassdiv);
+                spanItem2.classList.add(...arrclassspanbadge);
+                spanItem2.innerHTML = datebadge;
+                divItem2.appendChild(spanItem2);
+                divItem2.classList.add("justify-content-center");
+                panelChat.appendChild(divItem2);
+
+                const payload = {
+                    id: "",
+                    message: "",
+                    time: datebadge,
+                };
+
+                $.ajax({
+                    url: '@Url.Action("SetChat", "Chat")',
+                    type: "POST",
+                    data: JSON.stringify(payload),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    async: true,
+                    success: function (response, status, xhr) {
+                        console.log("Success:", response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Response Text:", xhr.responseText);
+                    },
+                });
+
+                socket.send(":time:" + datebadge);
+            }
+        } else {
+            const divItem2 = document.createElement('div');
+            const spanItem2 = document.createElement('span');
+            divItem2.classList.add(...arrclassdiv);
+            spanItem2.classList.add(...arrclassspanbadge);
+            spanItem2.innerHTML = time;
+            divItem2.appendChild(spanItem2);
+            divItem2.classList.add("justify-content-center");
+            panelChat.appendChild(divItem2);
+        }
     }
     function getTime() {
         var date = new Date();
@@ -452,6 +435,102 @@
                 alert("Android")
                 openInChrome(); 
             }
+        }
+    }
+    function GetSocketMessage(mode,message, date , stylefloat , savemode){
+        const arrclassdivtime = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
+        const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
+        const elements = document.querySelectorAll('.panelChat .badge');
+        const datebadge = new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: '2-digit',
+        }).format(new Date());
+        let checkdt = false;
+
+        if (mode === "New") {
+            for (let i = elements.length - 1; i >= 0; i--) {
+                if (elements[i].textContent === datebadge.toString()) {
+                    checkdt = true;
+                    break;
+                }
+            }
+
+            if (!checkdt) {
+                const divItem2 = document.createElement('div');
+                const spanItem2 = document.createElement('span');
+                divItem2.classList.add(...arrclassdivtime);
+                spanItem2.classList.add(...arrclassspanbadge);
+                spanItem2.innerHTML = datebadge;
+                divItem2.appendChild(spanItem2);
+                divItem2.classList.add("justify-content-center");
+                panelChat.appendChild(divItem2);
+
+                const payload = {
+                    id: "",
+                    message: "",
+                    time: datebadge,
+                };
+
+                $.ajax({
+                    url: '@Url.Action("SetChat", "Chat")',
+                    type: "POST",
+                    data: JSON.stringify(payload),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    async: true,
+                    success: function (response, status, xhr) {
+                        console.log("Success:", response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Response Text:", xhr.responseText);
+                    },
+                });
+
+                socket.send(":time:" + datebadge);
+            }
+        } else {
+            const divItem2 = document.createElement('div');
+            const spanItem2 = document.createElement('span');
+            divItem2.classList.add(...arrclassdiv);
+            spanItem2.classList.add(...arrclassspanbadge);
+            spanItem2.innerHTML = time;
+            divItem2.appendChild(spanItem2);
+            divItem2.classList.add("justify-content-center");
+            panelChat.appendChild(divItem2);
+        }
+        var msg = "";
+        const chunkSize = 20; 
+        const divItem = document.createElement('div');
+        const spanItem = document.createElement('span');
+        const spanTime = document.createElement('span');
+        let panelChat = document.getElementById('panelChat');
+        const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
+        const arrclassspan = ["p-2", "text-white" , "bg-primary", "bg-gradient", "rounded-2", "small-text"];
+        const arrclassspantime = ["small-text", "mt-auto", "text-dark"];
+        
+        divItem.classList.add(...arrclassdiv);
+        spanItem.classList.add(...arrclassspan);
+        spanTime.classList.add(...arrclassspantime);
+        for (var i = 0; i <= message.length; i += chunkSize) {
+            msg += message.substring(i, i + chunkSize) + '<br>';
+        }
+        spanItem.innerHTML = msg;
+        spanTime.innerHTML = date;
+        if (stylefloat == "right") {
+            divItem.classList.add("justify-content-end");
+            spanTime.classList.add("me-2")
+            divItem.appendChild(spanTime)
+            divItem.appendChild(spanItem)
+        } else {
+            divItem.classList.add("justify-content-start");
+            spanTime.classList.add("ms-2")
+            divItem.appendChild(spanItem)
+            divItem.appendChild(spanTime)
+        }
+        panelChat.appendChild(divItem);
+        if (savemode == "Y") {
+            saveMessage(message, date)
         }
     }
 </script>

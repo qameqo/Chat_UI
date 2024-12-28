@@ -401,6 +401,7 @@
         var safariUrl = 'https://itunes.apple.com/us/app/safari/id355746805'; 
         if (isAppleDevice() && isWebView()) {
             setTimeout(function () {
+                alert("Open Safari")
                 window.open(url, '_blank');
             }, 500);
         }
@@ -409,7 +410,8 @@
     function openInChrome() {
         var url = window.location.href;
         var chromeUrl = 'googlechrome://navigate?url=' + encodeURIComponent(url); 
-        if (isAndroidDevice() && isWebView()) {
+        if (isAndroidDevice() && isWebView())
+            alert("Open Chrome")
             window.location.href = chromeUrl;
             setTimeout(function () {
                 window.location.href = url;
@@ -419,8 +421,10 @@
     function CheckInternalBrowser() {
         if (isWebView()) {
             if (isAppleDevice()) {
+                alert("Apple")
                 openInSafari(); 
             } else if (isAndroidDevice()) {
+                alert("Android")
                 openInChrome(); 
             }
         }

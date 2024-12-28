@@ -96,6 +96,8 @@
                     }
                     createElementChat(message.split(':id:')[0], time, style, "N");
                     scrollChat();
+                }).catch((error) => {
+                    console.error("Error in setDate:", error);
                 });
             }
         }
@@ -299,66 +301,75 @@
     }
     function setDate(mode, time = "") {
         debugger;
-        const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
-        const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
-        const elements = document.querySelectorAll('.panelChat .badge');
-        const datebadge = new Intl.DateTimeFormat('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: '2-digit',
-        }).format(new Date());
-        let checkdt = false;
+        return new Promise((resolve, reject) => {
+            try{
+                const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
+                const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
+                const elements = document.querySelectorAll('.panelChat .badge');
+                const datebadge = new Intl.DateTimeFormat('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: '2-digit',
+                }).format(new Date());
+                let checkdt = false;
 
-        if (mode === "New") {
-            for (let i = elements.length - 1; i >= 0; i--) {
-                if (elements[i].textContent === datebadge.toString()) {
-                    checkdt = true;
-                    break;
+                if (mode === "New") {
+                    for (let i = elements.length - 1; i >= 0; i--) {
+                        if (elements[i].textContent === datebadge.toString()) {
+                            checkdt = true;
+                            break;
+                        }
+                    }
+
+                    if (!checkdt) {
+                        const divItem2 = document.createElement('div');
+                        const spanItem2 = document.createElement('span');
+                        divItem2.classList.add(...arrclassdiv);
+                        spanItem2.classList.add(...arrclassspanbadge);
+                        spanItem2.innerHTML = datebadge;
+                        divItem2.appendChild(spanItem2);
+                        divItem2.classList.add("justify-content-center");
+                        panelChat.appendChild(divItem2);
+
+                        const payload = {
+                            id: "",
+                            message: "",
+                            time: datebadge,
+                        };
+                        $.ajax({
+                            url: '@Url.Action("SetChat", "Chat")',
+                            type: "POST",
+                            data: JSON.stringify(payload),
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            async: true,
+                            success: function (response, status, xhr) {
+                                console.log("Success:", response);
+                                resolve();
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Response Text:", xhr.responseText);
+                            },
+                        });
+
+                        socket.send(":time:" + datebadge);
+                    }
+                    resolve();
+                } else {
+                    const divItem2 = document.createElement('div');
+                    const spanItem2 = document.createElement('span');
+                    divItem2.classList.add(...arrclassdiv);
+                    spanItem2.classList.add(...arrclassspanbadge);
+                    spanItem2.innerHTML = time;
+                    divItem2.appendChild(spanItem2);
+                    divItem2.classList.add("justify-content-center");
+                    panelChat.appendChild(divItem2);
+                    resolve();
                 }
+            }catch(error){
+                reject(error); 
             }
-
-            if (!checkdt) {
-                const divItem2 = document.createElement('div');
-                const spanItem2 = document.createElement('span');
-                divItem2.classList.add(...arrclassdiv);
-                spanItem2.classList.add(...arrclassspanbadge);
-                spanItem2.innerHTML = datebadge;
-                divItem2.appendChild(spanItem2);
-                divItem2.classList.add("justify-content-center");
-                panelChat.appendChild(divItem2);
-
-                const payload = {
-                    id: "",
-                    message: "",
-                    time: datebadge,
-                };
-                $.ajax({
-                    url: '@Url.Action("SetChat", "Chat")',
-                    type: "POST",
-                    data: JSON.stringify(payload),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    async: true,
-                    success: function (response, status, xhr) {
-                        console.log("Success:", response);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Response Text:", xhr.responseText);
-                    },
-                });
-
-                socket.send(":time:" + datebadge);
-            }
-        } else {
-            const divItem2 = document.createElement('div');
-            const spanItem2 = document.createElement('span');
-            divItem2.classList.add(...arrclassdiv);
-            spanItem2.classList.add(...arrclassspanbadge);
-            spanItem2.innerHTML = time;
-            divItem2.appendChild(spanItem2);
-            divItem2.classList.add("justify-content-center");
-            panelChat.appendChild(divItem2);
-        }
+        });
     }
     function getTime() {
         var date = new Date();

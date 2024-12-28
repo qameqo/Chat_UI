@@ -192,9 +192,6 @@
     }
 
     function saveMessage(message,date , time) {
-        // const messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
-        // messages.push({ message, date, style });
-        // localStorage.setItem('chatMessages', JSON.stringify(messages));
         var payload = {
             id : localStorage.getItem('ID'),
             message : message,
@@ -359,8 +356,7 @@
         if (m.length == 1) {
             m = "0" + m;
         }
-        const datebadge = getDate();
-        return datebadge +" "+ h + ":" + m ;
+        return h + ":" + m ;
     }
     function getDate(){
         const datebadge = new Intl.DateTimeFormat('en-GB', {

@@ -77,11 +77,11 @@
         const time = getTime();
         if (message != "") {
             console.log(message);
-            setDate("New");
+            //setDate("New");
             var style = "";
             if (message.includes("time")) {
                 console.log(message)
-                setDate("old", message.split(':time:')[1]);
+                //setDate("old", message.split(':time:')[1]);
             }else{
                 if (message.split(':id:')[1] != ID) {
                     style = "left";
@@ -231,7 +231,7 @@
                     if (data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
                             if (data[i].id == "") {
-                                setDate("old", data[i].time);
+                                //setDate("old", data[i].time);
                             }else{
                                 createElementChat(data[i].message, data[i].time, data[i].id == ID ? "right" : "left", "N");
                             }
@@ -366,7 +366,12 @@
         if (m.length == 1) {
             m = "0" + m;
         }
-        return h + ":" + m ;
+        const datebadge = new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: '2-digit',
+        }).format(new Date());
+        return datebadge +" "+ h + ":" + m ;
     }
     function showsweetalert(title,position,type) {
         Swal.fire({

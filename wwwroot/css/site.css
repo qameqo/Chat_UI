@@ -31,11 +31,7 @@ body {
     box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
 }
 
-@media (max-width: 576px) {
-    .circle-image {
-        max-width: 100px; 
-    }
-}
+
 .panelChat{
     overflow-y : auto;
     background-color : aliceblue;
@@ -142,6 +138,12 @@ input:focus, button:focus {
 @media (max-width: 768px) {
     .circle-image {
         max-width: 150px;
-        height: 120px;
+        height: 110px;
+    }
+}
+@media (max-width: 576px) {
+    .circle-image {
+        max-width: 100px;
+        height: 100px;
     }
 }

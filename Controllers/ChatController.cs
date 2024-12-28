@@ -55,10 +55,7 @@ namespace Websocket_UI.Controller
                 {
                     listChat = JsonConvert.DeserializeObject<List<ChatModel>>(chat);
                 }
-                if (listChat != null)
-                {
-                    listChat.Add(data);
-                }
+                listChat.Add(data);
                 string json = JsonConvert.SerializeObject(listChat);
                 _redisService.Set("ChatMessage", json);
                 response.success = true;

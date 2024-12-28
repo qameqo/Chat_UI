@@ -45,6 +45,7 @@
     createSnowflakes();
     setId();
     loadMessages();
+    let lastDate = "";
     let socket = new WebSocket('@Model.URL');
     const emojiBtn = document.getElementById("emoji-btn");
     const emojiPicker = document.getElementById("emoji-picker");
@@ -90,7 +91,13 @@
                     style = "right";
                     console.log("onmessage 2");
                 }
-                createElementChat(message.split(':id:')[0], time, style, "N");
+                const datebadge = new Intl.DateTimeFormat('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: '2-digit',
+                }).format(new Date());
+                checkNewDay(datebadge); 
+                createElementChat(message.split(':id:')[0], time, datebadge, style, "N");
             }
             scrollChat();
         }
@@ -153,8 +160,7 @@
             }
         }
     }
-    function createElementChat(message, date , stylefloat , savemode) {
-        console.log(message, date, stylefloat, savemode)
+    function createElementChat(message,time, date , stylefloat , savemode) {
         var msg = "";
         const chunkSize = 20; 
         const divItem = document.createElement('div');
@@ -172,7 +178,7 @@
             msg += message.substring(i, i + chunkSize) + '<br>';
         }
         spanItem.innerHTML = msg;
-        spanTime.innerHTML = date;
+        spanTime.innerHTML = time;
         if (stylefloat == "right") {
             divItem.classList.add("justify-content-end");
             spanTime.classList.add("me-2")
@@ -186,18 +192,19 @@
         }
         panelChat.appendChild(divItem);
         if (savemode == "Y") {
-            saveMessage(message, date)
+            saveMessage(message, date , time)
         }
     }
 
-    function saveMessage(message,date) {
+    function saveMessage(message,date , time) {
         // const messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
         // messages.push({ message, date, style });
         // localStorage.setItem('chatMessages', JSON.stringify(messages));
         var payload = {
             id : localStorage.getItem('ID'),
             message : message,
-            time : date
+            time : time,
+            date : date
         };
         $.ajax({
             url: '@Url.Action("SetChat", "Chat")',
@@ -233,6 +240,7 @@
                             if (data[i].id == "") {
                                 //setDate("old", data[i].time);
                             }else{
+                                checkNewDay(data[i].date)
                                 createElementChat(data[i].message, data[i].time, data[i].id == ID ? "right" : "left", "N");
                             }
                         }
@@ -442,6 +450,36 @@
                 openInChrome(); 
             }
         }
+    }
+
+    function checkNewDay(date) {
+        const formattedDate = new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: '2-digit'
+        }).format(new Date(date)); // Format the date to "30 Dec 24"
+
+        // If the date has changed, display the new date
+        if (formattedDate !== lastDate) {
+            lastDate = formattedDate; // Update the last displayed date
+            displayDate(formattedDate); // Function to display the date
+        }
+    }
+
+    // Function to display the new date in the chat
+    function displayDate(date) {
+        const panelChat = document.getElementById('panelChat');
+        const divItem = document.createElement('div');
+        const spanItem = document.createElement('span');
+        const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
+        const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
+
+        divItem.classList.add(...arrclassdiv);
+        spanItem.classList.add(...arrclassspanbadge);
+        spanItem.innerHTML = date;
+        divItem.appendChild(spanItem);
+        divItem.classList.add("justify-content-center");
+        panelChat.appendChild(divItem);
     }
 </script>
 

@@ -41,6 +41,7 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
 <script>
+    CheckInternalBrowser();
     createSnowflakes();
     setId();
     loadMessages();
@@ -99,6 +100,7 @@
     };
 
     document.getElementById("emoji-picker").appendChild(picker);
+    document.querySelector('input').scrollIntoView({ behavior: 'smooth' });
     document.addEventListener("click", (event) => {
         const isClickInside = emojiPicker.contains(event.target) || emojiBtn.contains(event.target);
         if (!isClickInside) {
@@ -381,6 +383,46 @@
             }
         });
     }
+    function isWebView() {
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        if (/FBAN|FBAV/.test(userAgent)) {
+            return true;
+        }
+
+        if (/Android.*Version\/[A-Za-z0-9.-]+.*Chrome/.test(userAgent) || /WebView/.test(userAgent)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function redirectToExternalBrowser() {
+        window.location.href = window.location.href; 
+    }
+
+    function CheckInternalBrowser() {
+        if (isWebView()) {
+            console.log('Website is in WebView. Show external browser option.');
+            var button = document.createElement('button');
+            button.textContent = 'Open in External Browser';
+            button.style.position = 'fixed';
+            button.style.bottom = '20px';
+            button.style.right = '20px';
+            button.style.padding = '10px 20px';
+            button.style.backgroundColor = '#007BFF';
+            button.style.color = '#fff';
+            button.style.border = 'none';
+            button.style.borderRadius = '5px';
+            button.style.zIndex = '9999';
+            document.body.appendChild(button);
+            button.onclick = function () {
+                redirectToExternalBrowser();
+            };
+        } else {
+            console.log('Website is not in WebView.');
+        }
+    }
+    
 </script>
 
 

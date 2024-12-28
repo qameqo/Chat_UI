@@ -383,46 +383,48 @@
             }
         });
     }
+    function isAppleDevice() {
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        return /iPhone|iPad|iPod/i.test(userAgent);
+    }
+    function isAndroidDevice() {
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        return /android/i.test(userAgent);
+    }
     function isWebView() {
         var userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        if (/FBAN|FBAV/.test(userAgent)) {
-            return true;
-        }
-
-        if (/Android.*Version\/[A-Za-z0-9.-]+.*Chrome/.test(userAgent) || /WebView/.test(userAgent)) {
-            return true;
-        }
-
-        return false;
+        return /wv/.test(userAgent) || /WebView/.test(userAgent) || /FBAN|FBAV/.test(userAgent);
     }
 
-    function redirectToExternalBrowser() {
-        window.location.href = window.location.href; 
+    function openInSafari() {
+        var url = window.location.href;
+        var safariUrl = 'https://itunes.apple.com/us/app/safari/id355746805'; 
+        if (isAppleDevice() && isWebView()) {
+            setTimeout(function () {
+                window.open(url, '_blank');
+            }, 500);
+        }
     }
 
+    function openInChrome() {
+        var url = window.location.href;
+        var chromeUrl = 'googlechrome://navigate?url=' + encodeURIComponent(url); 
+        if (isAndroidDevice() && isWebView()) {
+            window.location.href = chromeUrl;
+            setTimeout(function () {
+                window.location.href = url;
+            }, 500);
+        }
+    }
     function CheckInternalBrowser() {
         if (isWebView()) {
-            console.log('Website is in WebView. Show external browser option.');
-            var button = document.createElement('button');
-            button.textContent = 'Open in External Browser';
-            button.style.position = 'fixed';
-            button.style.bottom = '20px';
-            button.style.right = '20px';
-            button.style.padding = '10px 20px';
-            button.style.backgroundColor = '#007BFF';
-            button.style.color = '#fff';
-            button.style.border = 'none';
-            button.style.borderRadius = '5px';
-            button.style.zIndex = '9999';
-            document.body.appendChild(button);
-            button.onclick = function () {
-                redirectToExternalBrowser();
-            };
-        } else {
-            console.log('Website is not in WebView.');
+            if (isAppleDevice()) {
+                openInSafari(); 
+            } else if (isAndroidDevice()) {
+                openInChrome(); 
+            }
         }
     }
-    
 </script>
 
 

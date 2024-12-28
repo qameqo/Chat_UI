@@ -71,17 +71,17 @@
         console.log("[open] Connection established");
     };
 
-    socket.onmessage = function (event) {
+    socket.onmessage = async function (event) {
         const ID = localStorage.getItem('ID')
         const message = event.data;
         const time = getTime();
         if (message != "") {
             console.log(message);
-            setDate("New");
+            await setDate("New");
             var style = "";
             if (message.includes("time")) {
                 console.log(message)
-                setDate("old", message.split(':time:')[1]);
+                await setDate("old", message.split(':time:')[1]);
             }else{
                 if (message.split(':id:')[1] != ID) {
                     style = "left";
@@ -231,7 +231,7 @@
                     if (data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
                             if (data[i].id == "") {
-                                setDate("old", data[i].time);
+                                await setDate("old", data[i].time);
                             }else{
                                 createElementChat(data[i].message, data[i].time, data[i].id == ID ? "right" : "left", "N");
                             }
@@ -292,8 +292,7 @@
             flake.style.animationDelay = Math.random() * 5 + 's';
         }
     }
-    async function setDate(mode , time = "") {
-        debugger;
+    async function setDate(mode, time = "") {
         const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
         const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
         const elements = document.querySelectorAll('.panelChat .badge');
@@ -302,57 +301,59 @@
             month: 'short',
             year: '2-digit',
         }).format(new Date());
-        console.log(datebadge)
-        var checkdt = false;
+        let checkdt = false;
 
-        if(mode == "New"){
-            console.log(elements.length);
+        if (mode === "New") {
             for (let i = elements.length - 1; i >= 0; i--) {
-                const element = elements[i];
-                if (element.textContent == datebadge.toString()) {
+                if (elements[i].textContent === datebadge.toString()) {
                     checkdt = true;
                     break;
                 }
             }
-            // for (let i = 0; i < elements.length; i++) {
-            // }
-            console.log(checkdt)
-            if (checkdt == false) {
+
+            if (!checkdt) {
                 const divItem2 = document.createElement('div');
                 const spanItem2 = document.createElement('span');
-                divItem2.classList.add(...arrclassdiv)
-                spanItem2.classList.add(...arrclassspanbadge)
+                divItem2.classList.add(...arrclassdiv);
+                spanItem2.classList.add(...arrclassspanbadge);
                 spanItem2.innerHTML = datebadge;
                 divItem2.appendChild(spanItem2);
                 divItem2.classList.add("justify-content-center");
                 panelChat.appendChild(divItem2);
 
-                var payload = {
+                const payload = {
                     id: "",
                     message: "",
-                    time: datebadge
+                    time: datebadge,
                 };
-                $.ajax({
-                    url: '@Url.Action("SetChat", "Chat")',
-                    type: "POST",
-                    data: JSON.stringify(payload),
-                    contentType: "application/json charset=utf-8",
-                    dataType: "json",
-                    async: true,
-                    success: function (response, status, xhr) {
-                        console.log("Success:", response);
-                    },
-                    error: function (xhr, status, error) {
-                        console.log("Response Text:", xhr.responseText);
-                    },
+
+                // Wrap the AJAX call in a Promise
+                await new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: '@Url.Action("SetChat", "Chat")',
+                        type: "POST",
+                        data: JSON.stringify(payload),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        async: true,
+                        success: function (response, status, xhr) {
+                            console.log("Success:", response);
+                            resolve();
+                        },
+                        error: function (xhr, status, error) {
+                            console.error("Response Text:", xhr.responseText);
+                            reject(error);
+                        },
+                    });
                 });
-                socket.send(":time:" + datebadge)
+
+                socket.send(":time:" + datebadge);
             }
-        }else{
+        } else {
             const divItem2 = document.createElement('div');
             const spanItem2 = document.createElement('span');
-            divItem2.classList.add(...arrclassdiv)
-            spanItem2.classList.add(...arrclassspanbadge)
+            divItem2.classList.add(...arrclassdiv);
+            spanItem2.classList.add(...arrclassspanbadge);
             spanItem2.innerHTML = time;
             divItem2.appendChild(spanItem2);
             divItem2.classList.add("justify-content-center");

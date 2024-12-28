@@ -78,11 +78,9 @@
         const time = getTime();
         if (message != "") {
             console.log(message);
-            //setDate("New");
             var style = "";
             if (message.includes("time")) {
                 console.log(message)
-                //setDate("old", message.split(':time:')[1]);
             }else{
                 if (message.split(':id:')[1] != ID) {
                     style = "left";
@@ -91,11 +89,7 @@
                     style = "right";
                     console.log("onmessage 2");
                 }
-                const datebadge = new Intl.DateTimeFormat('en-GB', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: '2-digit',
-                }).format(new Date());
+                const datebadge = getDate();
                 checkNewDay(datebadge); 
                 createElementChat(message.split(':id:')[0], time, datebadge, style, "N");
             }
@@ -150,6 +144,7 @@
         const ID = localStorage.getItem('ID')
         if (emojiInput.value != "") {
             if (socket.readyState === WebSocket.OPEN) {
+                checkNewDay(getDate())
                 createElementChat(emojiInput.value, getTime(),getDate(), "right", "Y");
                 socket.send(emojiInput.value + ":id:" + ID);
                 emojiInput.value = "";
@@ -237,12 +232,8 @@
                     var data = response.data;
                     if (data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
-                            if (data[i].id == "") {
-                                //setDate("old", data[i].time);
-                            }else{
-                                checkNewDay(data[i].date)
-                                createElementChat(data[i].message, data[i].time, data[i].date, data[i].id == ID ? "right" : "left", "N");
-                            }
+                            checkNewDay(data[i].date)
+                            createElementChat(data[i].message, data[i].time, data[i].date, data[i].id == ID ? "right" : "left", "N");
                         }
                     }
                     scrollChat();
@@ -251,13 +242,11 @@
                     if (response.message != "Data Not Found.") {
                         showsweetalert(response.message, "center", "error");
                     }
-                    //alert(response.message);
                 }
             },
             error: function (xhr, status, error) { 
                 console.log("Response Text:", xhr.responseText);
                 showsweetalert(xhr.responseText, "center", "error");
-                //alert(xhr.responseText);
             },
         });
     }
@@ -305,11 +294,7 @@
         const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
         const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
         const elements = document.querySelectorAll('.panelChat .badge');
-        const datebadge = new Intl.DateTimeFormat('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: '2-digit',
-        }).format(new Date());
+        const datebadge = getDate();
         let checkdt = false;
 
         if (mode === "New") {
@@ -374,11 +359,7 @@
         if (m.length == 1) {
             m = "0" + m;
         }
-        const datebadge = new Intl.DateTimeFormat('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: '2-digit',
-        }).format(new Date());
+        const datebadge = getDate();
         return datebadge +" "+ h + ":" + m ;
     }
     function getDate(){
@@ -465,16 +446,13 @@
             day: '2-digit',
             month: 'short',
             year: '2-digit'
-        }).format(new Date(date)); // Format the date to "30 Dec 24"
+        }).format(new Date(date)); 
 
-        // If the date has changed, display the new date
         if (formattedDate !== lastDate) {
-            lastDate = formattedDate; // Update the last displayed date
-            displayDate(formattedDate); // Function to display the date
+            lastDate = formattedDate; 
+            displayDate(formattedDate); 
         }
     }
-
-    // Function to display the new date in the chat
     function displayDate(date) {
         const panelChat = document.getElementById('panelChat');
         const divItem = document.createElement('div');

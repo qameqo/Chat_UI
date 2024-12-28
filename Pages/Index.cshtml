@@ -78,9 +78,7 @@
         if (message != "") {
             console.log(message);
             setDate("New");
-            if (message.split(':id:')[1] != ID) {
-                createElementChat(message.split(':id:')[0], time, "left", "Y");
-            } else {
+            if (message.split(':id:')[1] == ID) {
                 createElementChat(message.split(':id:')[0], time, "right", "N");
             }
             scrollChat();

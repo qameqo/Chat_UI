@@ -80,7 +80,7 @@
             var style = "";
             if (message.includes("time")) {
                 console.log(message)
-                setDate("old", message.split(':time:')[1]);
+                await setDate("old", message.split(':time:')[1]);
             }else{
                 if (message.split(':id:')[1] != ID) {
                     style = "left";
@@ -142,7 +142,6 @@
         const ID = localStorage.getItem('ID')
         if (emojiInput.value != "") {
             if (socket.readyState === WebSocket.OPEN) {
-                setDate("New");
                 createElementChat(emojiInput.value, getTime(), "right", "Y");
                 socket.send(emojiInput.value + ":id:" + ID);
                 emojiInput.value = "";
@@ -154,6 +153,7 @@
         }
     }
     function createElementChat(message, date , stylefloat , savemode) {
+        await setDate("New");
         console.log(message, date, stylefloat, savemode)
         var msg = "";
         const chunkSize = 20; 
@@ -231,7 +231,7 @@
                     if (data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
                             if (data[i].id == "") {
-                                setDate("old", data[i].time);
+                                await setDate("old", data[i].time);
                             }else{
                                 createElementChat(data[i].message, data[i].time, data[i].id == ID ? "right" : "left", "N");
                             }

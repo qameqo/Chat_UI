@@ -231,7 +231,9 @@
                     scrollChat();
                 } else {
                     console.log(response.message)
-                    showsweetalert(response.message, "center", "error");
+                    if (response.message != "Data Not Found.") {
+                        showsweetalert(response.message, "center", "error");
+                    }
                     //alert(response.message);
                 }
             },
@@ -421,8 +423,8 @@
     function CheckInternalBrowser() {
         if (isWebView()) {
             if (isAppleDevice()) {
-                alert("Apple")
-                openInSafari(); 
+                showsweetalert("แนะนำให้ copy link ไปเปิดที่ browser โดยตรงครับ","center","info");
+                //openInSafari(); 
             } else if (isAndroidDevice()) {
                 alert("Android")
                 openInChrome(); 

@@ -77,16 +77,19 @@
         const time = getTime();
         if (message != "") {
             console.log(message);
-            setDate("New");
             var style = "";
-            if (message.split(':id:')[1] != ID) {
-                style = "left";
-                console.log("onmessage 1");
-            } else {
-                style = "right";
-                console.log("onmessage 2");
+            if (message.includes("time")) {
+                setDate("old", message.split(':time:')[1]);
+            }else{
+                if (message.split(':id:')[1] != ID) {
+                    style = "left";
+                    console.log("onmessage 1");
+                } else {
+                    style = "right";
+                    console.log("onmessage 2");
+                }
+                createElementChat(message.split(':id:')[0], time, style, "N");
             }
-            createElementChat(message.split(':id:')[0], time, style, "N");
             scrollChat();
         }
     };
@@ -341,6 +344,7 @@
                         console.log("Response Text:", xhr.responseText);
                     },
                 });
+                socket.send(":time:" + datebadge)
             }
         }else{
             const divItem2 = document.createElement('div');

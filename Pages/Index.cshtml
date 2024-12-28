@@ -78,13 +78,15 @@
         if (message != "") {
             console.log(message);
             setDate("New");
+            var style = "";
             if (message.split(':id:')[1] != ID) {
-                createElementChat(message.split(':id:')[0], time, "left", "Y");
+                style = "left";
                 console.log("onmessage 1");
             } else {
-                createElementChat(message.split(':id:')[0], time, "right", "N");
+                style = "right";
                 console.log("onmessage 2");
             }
+            createElementChat(message.split(':id:')[0], time, "left", "N");
             scrollChat();
         }
     };

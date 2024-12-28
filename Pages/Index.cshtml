@@ -71,28 +71,33 @@
         console.log("[open] Connection established");
     };
 
-    socket.onmessage = async function (event) {
+    socket.onmessage = function (event) {
         const ID = localStorage.getItem('ID')
         const message = event.data;
         const time = getTime();
         if (message != "") {
             console.log(message);
-            await setDate("New");
+            setDate("New");
             var style = "";
             if (message.includes("time")) {
                 console.log(message)
-                await setDate("old", message.split(':time:')[1]);
+                setDate("old", message.split(':time:')[1]).then(() => {
+                    scrollChat();
+                });
             }else{
-                if (message.split(':id:')[1] != ID) {
-                    style = "left";
-                    console.log("onmessage 1");
-                } else {
-                    style = "right";
-                    console.log("onmessage 2");
-                }
-                createElementChat(message.split(':id:')[0], time, style, "N");
+                setDate("New").then(() => {
+                    let style = "";
+                    if (message.split(':id:')[1] !== ID) {
+                        style = "left";
+                        console.log("onmessage 1");
+                    } else {
+                        style = "right";
+                        console.log("onmessage 2");
+                    }
+                    createElementChat(message.split(':id:')[0], time, style, "N");
+                    scrollChat();
+                });
             }
-            scrollChat();
         }
     };
 
@@ -231,7 +236,7 @@
                     if (data.length > 0) {
                         for (var i = 0; i < data.length; i++) {
                             if (data[i].id == "") {
-                                await setDate("old", data[i].time);
+                                setDate("old", data[i].time);
                             }else{
                                 createElementChat(data[i].message, data[i].time, data[i].id == ID ? "right" : "left", "N");
                             }
@@ -292,7 +297,7 @@
             flake.style.animationDelay = Math.random() * 5 + 's';
         }
     }
-    async function setDate(mode, time = "") {
+    function setDate(mode, time = "") {
         const arrclassdiv = ["d-flex", "col-sm-12", "mt-2", "align-self-center"];
         const arrclassspanbadge = ["badge", "rounded-pill", "bg-light", "text-dark"];
         const elements = document.querySelectorAll('.panelChat .badge');
@@ -326,25 +331,19 @@
                     message: "",
                     time: datebadge,
                 };
-
-                // Wrap the AJAX call in a Promise
-                await new Promise((resolve, reject) => {
-                    $.ajax({
-                        url: '@Url.Action("SetChat", "Chat")',
-                        type: "POST",
-                        data: JSON.stringify(payload),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        async: true,
-                        success: function (response, status, xhr) {
-                            console.log("Success:", response);
-                            resolve();
-                        },
-                        error: function (xhr, status, error) {
-                            console.error("Response Text:", xhr.responseText);
-                            reject(error);
-                        },
-                    });
+                $.ajax({
+                    url: '@Url.Action("SetChat", "Chat")',
+                    type: "POST",
+                    data: JSON.stringify(payload),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    async: true,
+                    success: function (response, status, xhr) {
+                        console.log("Success:", response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Response Text:", xhr.responseText);
+                    },
                 });
 
                 socket.send(":time:" + datebadge);

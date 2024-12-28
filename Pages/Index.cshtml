@@ -131,12 +131,16 @@
     function sendMessage() {
         const ID = localStorage.getItem('ID')
         if (emojiInput.value != "") {
-            setDate("New");
-            createElementChat(emojiInput.value, getTime(), "right", "Y");
-            socket.send(emojiInput.value + ":id:" + ID);
-            emojiInput.value = "";
-            $('#counter').text("0/100");
-            scrollChat();
+            if (socket.readyState === WebSocket.OPEN) {
+                setDate("New");
+                createElementChat(emojiInput.value, getTime(), "right", "Y");
+                socket.send(emojiInput.value + ":id:" + ID);
+                emojiInput.value = "";
+                $('#counter').text("0/100");
+                scrollChat();
+            } else {
+                showtoast("Can't Connect WebSocket!", "top-end", "warning");
+            }
         }
     }
     function createElementChat(message, date , stylefloat , savemode) {
@@ -224,12 +228,15 @@
                     }
                     scrollChat();
                 } else {
-                    alert(response.message);
+                    console.log(response.message)
+                    showsweetalert(response.message, "center", "error");
+                    //alert(response.message);
                 }
             },
             error: function (xhr, status, error) { 
                 console.log("Response Text:", xhr.responseText);
-                alert(xhr.responseText);
+                showsweetalert(xhr.responseText, "center", "error");
+                //alert(xhr.responseText);
             },
         });
     }
@@ -349,6 +356,30 @@
             m = "0" + m;
         }
         return h + ":" + m ;
+    }
+    function showsweetalert(title,position,type) {
+        Swal.fire({
+            position: position,
+            icon: type,
+            title: title,
+            showConfirmButton: true,
+        });
+    }
+    function showtoast(title, position, type) {
+        Swal.fire({
+            toast: true,
+            position: position,
+            icon: type,
+            title: title,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: () => {
+                const toast = Swal.getPopup();
+                toast.style.backgroundColor = '#ffcc00';
+                toast.style.color = '#000';
+            }
+        });
     }
 </script>
 

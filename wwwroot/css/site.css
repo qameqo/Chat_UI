@@ -113,3 +113,22 @@ input:focus, button:focus {
     top: -520px;
     z-index: 999;
 }
+.colored-toast.swal2-icon-warning {
+    background-color: #f87786 !important;
+}
+.colored-toast .swal2-title {
+    color: white;
+}
+
+.colored-toast .swal2-close {
+    color: white;
+}
+
+.colored-toast .swal2-html-container {
+    color: white;
+}
+
+.swal2-icon.swal2-warning {
+     border-color: black !important; 
+     color: black !important; 
+}

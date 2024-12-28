@@ -132,3 +132,16 @@ input:focus, button:focus {
      border-color: black !important; 
      color: black !important; 
 }
+
+@media (max-width: 1399px) {
+    .circle-image {
+        max-width: 150px;
+        height: 150px;
+    }
+}
+@media (max-width: 768px) {
+    .circle-image {
+        max-width: 150px;
+        height: 120px;
+    }
+}

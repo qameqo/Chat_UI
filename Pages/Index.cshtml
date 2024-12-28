@@ -80,8 +80,10 @@
             setDate("New");
             if (message.split(':id:')[1] != ID) {
                 createElementChat(message.split(':id:')[0], time, "left", "Y");
+                console.log("onmessage 1");
             } else {
                 createElementChat(message.split(':id:')[0], time, "right", "N");
+                console.log("onmessage 2");
             }
             scrollChat();
         }
@@ -146,6 +148,7 @@
         }
     }
     function createElementChat(message, date , stylefloat , savemode) {
+        console.log(message, date, stylefloat, savemode)
         var msg = "";
         const chunkSize = 20; 
         const divItem = document.createElement('div');

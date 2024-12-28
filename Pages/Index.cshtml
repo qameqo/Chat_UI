@@ -150,7 +150,7 @@
         const ID = localStorage.getItem('ID')
         if (emojiInput.value != "") {
             if (socket.readyState === WebSocket.OPEN) {
-                createElementChat(emojiInput.value, getTime(), "right", "Y");
+                createElementChat(emojiInput.value, getTime(),getDate(), "right", "Y");
                 socket.send(emojiInput.value + ":id:" + ID);
                 emojiInput.value = "";
                 $('#counter').text("0/100");
@@ -241,7 +241,7 @@
                                 //setDate("old", data[i].time);
                             }else{
                                 checkNewDay(data[i].date)
-                                createElementChat(data[i].message, data[i].time, data[i].id == ID ? "right" : "left", "N");
+                                createElementChat(data[i].message, data[i].time, data[i].date, data[i].id == ID ? "right" : "left", "N");
                             }
                         }
                     }
@@ -380,6 +380,14 @@
             year: '2-digit',
         }).format(new Date());
         return datebadge +" "+ h + ":" + m ;
+    }
+    function getDate(){
+        const datebadge = new Intl.DateTimeFormat('en-GB', {
+            day: '2-digit',
+            month: 'short',
+            year: '2-digit',
+        }).format(new Date());
+        return datebadge;
     }
     function showsweetalert(title,position,type) {
         Swal.fire({

@@ -79,6 +79,7 @@
             console.log(message);
             var style = "";
             if (message.includes("time")) {
+                console.log(message)
                 setDate("old", message.split(':time:')[1]);
             }else{
                 if (message.split(':id:')[1] != ID) {

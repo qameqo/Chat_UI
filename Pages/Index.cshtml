@@ -400,8 +400,8 @@
         var url = window.location.href;
         var safariUrl = 'https://itunes.apple.com/us/app/safari/id355746805'; 
         if (isAppleDevice() && isWebView()) {
+            alert("Open Safari")
             setTimeout(function () {
-                alert("Open Safari")
                 window.open(url, '_blank');
             }, 500);
         }
@@ -410,8 +410,8 @@
     function openInChrome() {
         var url = window.location.href;
         var chromeUrl = 'googlechrome://navigate?url=' + encodeURIComponent(url); 
-        if (isAndroidDevice() && isWebView())
-            alert("Open Chrome")
+        if (isAndroidDevice() && isWebView()) {
+            alert("Open chrome")
             window.location.href = chromeUrl;
             setTimeout(function () {
                 window.location.href = url;

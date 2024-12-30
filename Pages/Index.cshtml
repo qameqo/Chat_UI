@@ -35,8 +35,13 @@
     </div>
     <div class="row justify-content-center">
         <div class="col-sm-5 p-0 mt-5">
-            <div class="input-group">
+            <div class="input-group position-relative d-inline-flex align-items-center">
                 <input type="text" onkeyup="ChecklengthMsg(this)" onkeydown="EnterMessage(event)" id="Msgtxt" maxlength="100" class="form-control " placeholder="Enter Message...">
+                <div class="cross-input d-flex justify-content-center align-self-center d-none">
+                    <svg onclick="ClearText()"  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
+                    </svg>
+                </div>
                 <button class="btn btn-outline-primary border-0" onclick="openEmoji(event)" type="button" id="emoji-btn">😀</button>
                 <button type="button" class="btn btn-outline-primary rounded-3" id="btnsend" onclick="sendMessage()">Send 🚀</button>
             </div>
@@ -136,6 +141,13 @@
         emojiPicker.style.display = emojiPicker.style.display === "none" ? "block" : "none";
         event.stopPropagation();
     }
+    function ClearText() {
+        emojiInput.value = "";
+        emojiInput.focus();
+        $(".cross-input").removeClass("d-block")
+        $(".cross-input").addClass("d-none")
+        $('#counter').text("0/100");
+    }
     function ChecklengthMsg(inputElement , emoji = "") {
         const inputText = inputElement.value;
         let lengthMsg = "";
@@ -143,6 +155,13 @@
             lengthMsg = (inputText.length / 2).toString();
         }else{
             lengthMsg = inputText.length.toString();
+        }
+        if (inputText != "") {
+            $(".cross-input").removeClass("d-none")
+            $(".cross-input").addClass("d-block")
+        }else{
+            $(".cross-input").removeClass("d-block")
+            $(".cross-input").addClass("d-none")
         }
         $('#counter').text(lengthMsg + "/100");
     }

@@ -164,3 +164,14 @@ button:focus {
         height: 100px;
     }
 }
+.cross-input {
+    right: 140px;
+    cursor:pointer;
+    z-index: 100;
+    position:absolute;
+}
+@media (max-width: 990px) {
+    .cross-input {
+        display:none !important;
+    }
+}
